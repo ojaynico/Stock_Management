@@ -6,19 +6,7 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
 </head>
 <body>
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Stock Management</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a th:href="@{/home}">Home</a></li>
-            <li><a th:href="@{/user/list}">Employees</a></li>
-            <li><a href="#">Page 2</a></li>
-            <li><a href="#">Page 3</a></li>
-        </ul>
-    </div>
-</nav>
+<header th:replace="links :: links"></header>
 
 <div class="container">
     <h1 class="text-center">This is Home</h1>

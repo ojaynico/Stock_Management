@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Transactions</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/fresh-bootstrap-table.css}" rel="stylesheet"/>
+</head>
+<body>
+<header th:replace="links :: links"></header>
+
+<div class="container">
+    <div class="col-lg-7">
+        <div class="fresh-table">
+            <div class="toolbar">
+                <h3>All Products</h3>
+            </div>
+
+            <table id="fresh-table" class="table">
+                <thead class="btn-primary">
+                <th data-field="id">Code</th>
+                <th data-field="name" data-sortable="true">Name</th>
+                <th data-field="salary" data-sortable="true">Quantity Left</th>
+                <th data-field="country" data-sortable="true">Price</th>
+                <th data-field="actions">Actions</th>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.code_product}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.quantity}"></td>
+                    <td th:text="${product.unit_price}"></td>
+                    <td><button class="btn btn-success" data-toggle="modal" th:attr="data-target='#addCart'+${product.id}">Add to Cart</button></td>
+
+                    <div th:id="'addCart'+${product.id}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title text-center">Add Item To Cart</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addtocart-form">
+                                        <div class="form-group">
+                                            <label>Item Name</label>
+                                            <input class="form-control" name="name" th:value="${product.name}" th:readonly="true"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Enter Quantity</label>
+                                            <input class="form-control" name="quantity" type="number"/>
+                                        </div>
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-primary" id="addtocart-btn">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-5"></div>
+</div>
+<script th:src="@{/js/jquery-3.1.0.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap-table.js}" type="text/javascript"></script>
+<script th:src="@{/js/transactions.js}" type="text/javascript"></script>
+<script type="text/javascript">
+    var $table = $('#fresh-table');
+
+    $().ready(function(){
+        $table.bootstrapTable({
+            toolbar: ".toolbar",
+
+            showRefresh: true,
+            search: true,
+            showToggle: true,
+            showColumns: true,
+            pagination: true,
+            striped: true,
+            pageSize: 8,
+            pageList: [8,10,25,50,100],
+
+            formatShowingRows: function(pageFrom, pageTo, totalRows){
+                //do nothing here, we don't want to show the text "showing x of y from..."
+            },
+            formatRecordsPerPage: function(pageNumber){
+                return pageNumber + " rows visible";
+            },
+            icons: {
+                refresh: 'fa fa-refresh',
+                toggle: 'fa fa-th-list',
+                columns: 'fa fa-columns',
+                detailOpen: 'fa fa-plus-circle',
+                detailClose: 'fa fa-minus-circle'
+            }
+        });
+
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView');
+        });
+
+    });
+    $(document).ready(function() {
+        $("#addtocart-btn").on("click", function () {
+            $.ajax({
+                url: "/transaction/addtocart",
+                type: "POST",
+                data: new FormData($("#addtocart-form")[0]),
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (suc) {
+                    //Materialize.toast(suc, 4000);
+                },
+                error: function (er) {
+                    Materialize.toast(er, 4000);
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

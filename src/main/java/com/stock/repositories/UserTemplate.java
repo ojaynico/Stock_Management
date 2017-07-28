@@ -1,5 +1,6 @@
 package com.stock.repositories;
 
+import com.stock.entities.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +30,15 @@ public class UserTemplate {
         jdbcTemplate.update("UPDATE user SET status="+status+" WHERE id="+id);
     }
 
+    public int updateInfo(Integer id, String name, String contact, Integer role){
+        return jdbcTemplate.update("UPDATE user SET name='"+name+"', contact='"+contact+"', role="+role+" WHERE id="+id);
+    }
+
+    public int updatePassword(Integer id, String password){
+        return jdbcTemplate.update("UPDATE user SET password='"+password+"' WHERE id="+id);
+    }
+
+    public int updatePicture(Integer id, String picture){
+        return jdbcTemplate.update("UPDATE user SET picture='"+picture+"' WHERE id="+id);
+    }
 }

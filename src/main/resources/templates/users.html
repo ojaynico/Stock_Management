@@ -6,19 +6,8 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
 </head>
 <body>
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Stock Management</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li><a th:href="@{/home}">Home</a></li>
-            <li class="active"><a th:href="@{/user/list}">Employees</a></li>
-            <li><a href="#">Page 2</a></li>
-            <li><a href="#">Page 3</a></li>
-        </ul>
-    </div>
-</nav>
+
+<header th:replace="links :: links"></header>
 
 <div class="container">
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Add Employee</button>
@@ -28,7 +17,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">User Form</h4>
+                    <h4 class="modal-title text-center">Add Employee</h4>
                 </div>
                 <div class="modal-body">
                     <!--We created a form in html that will map to /user/add in our controller and it is -->
@@ -118,7 +107,104 @@
                 <td th:if="${user.status == 0}"><a th:href="@{/user/status/{id}(id=${user.id})}" class="btn btn-xs btn-danger">Blocked</a></td>
 
                 <!--The button below is for delete-->
-                <td><a th:href="@{/user/delete/{id}(id=${user.id})}" class="btn btn-xs btn-danger">Delete</a></td>
+                <td>
+                    <button type="button" class="btn btn-xs btn-warning" data-toggle="modal" th:attr="data-target='#editModal'+${user.id}">Edit</button>
+                    <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" th:attr="data-target='#deleteModal'+${user.id}">Delete</button>
+                </td>
+
+                <!--Edit User-->
+                <div th:id="'editModal'+${user.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title text-center">Edit User</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h4 class="text-center text-danger">Employee Info</h4>
+                                <form th:action="@{/user/editinfo}" method="post">
+                                    <input type="hidden" name="id" th:value="${user.id}"/>
+                                    <div class="form-group">
+                                        <label>User Code</label>
+                                        <input type="text" class="form-control" th:required="true" th:readonly="true" name="code" th:value="${user.code}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" class="form-control" th:required="true" name="name" th:value="${user.name}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Mobile</label>
+                                        <input type="text" class="form-control" th:required="true" name="contact" th:value="${user.contact}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>User Role</label>
+                                        <select name="role" class="form-control">
+                                            <option value="1" th:selected="${user.role == 1}">Director</option>
+                                            <option value="2" th:selected="${user.role == 2}">Manager</option>
+                                            <option value="3" th:selected="${user.role == 3}">Cashier</option>
+                                        </select>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </form>
+
+                                <hr/>
+                                <h4 class="text-center text-danger">Employee Password</h4>
+                                <form th:action="@{/user/editpass}" method="post">
+                                    <input type="hidden" name="id" th:value="${user.id}"/>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input type="password" class="form-control" name="password"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Retype Password</label>
+                                        <input type="password" class="form-control" name="repassword"/>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </form>
+
+                                <hr/>
+                                <h4 class="text-center text-danger">Employee Image</h4>
+                                <form th:action="@{/user/editpic}" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" th:value="${user.id}"/>
+                                    <div class="form-group">
+                                        <label>Employee Picture</label>
+                                        <input type="file" class="form-control" name="picture"/>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Delete User-->
+                <div th:id="'deleteModal'+${user.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title text-center">Delete User</h4>
+                            </div>
+                            <div class="modal-body text-center">
+                                <h3 class="text-danger">Are you sure you want to Delete<br/> <span style="font-weight: bold" th:text="${user.name}"></span></h3>
+                                <a th:href="@{delete/{id}(id=${user.id})}" class="btn btn-danger">YES</a>
+                                <a href="#" class="btn btn-success" data-dismiss="modal">NO</a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </tr>
             </tbody>
         </table>

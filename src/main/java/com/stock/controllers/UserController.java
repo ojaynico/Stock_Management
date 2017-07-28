@@ -125,6 +125,69 @@ public class UserController {
         return "redirect:/user/list";
     }
 
+    @PostMapping("/editinfo")
+    public String editInfo(@RequestParam("id") Integer id,
+                           @RequestParam("name") String name,
+                           @RequestParam("contact") String contact,
+                           @RequestParam("role") Integer role){
+
+        if (userTemplate.updateInfo(id,name,contact,role) >= 1){
+            return "redirect:/user/list";
+        } else {
+            return "redirect:/user/list";
+        }
+    }
+
+    @PostMapping("/editpass")
+    public String editPassword(@RequestParam("id") Integer id,
+                               @RequestParam("password") String password,
+                               @RequestParam("repassword") String repassword){
+        if (password.equals(repassword)){
+            if (userTemplate.updatePassword(id, password) >= 1){
+                return "redirect:/user/list";
+            } else {
+                return "redirect:/user/list";
+            }
+        } else {
+            return "redirect:/user/list";
+        }
+    }
+
+    @PostMapping("/editpic")
+    public String editPicture(@RequestParam("id") Integer id,
+                              @RequestParam("picture") MultipartFile picture){
+        //We are generating random numbers below
+        Random r = new Random();
+
+        //We want to create unique names for images uploaded so we use the random numbers generated
+        int pname = r.nextInt(33000000) + r.nextInt(33000000);
+
+        User user = userRepository.findOne(id);
+
+        try {
+            String imagename = String.valueOf(pname);
+            String directory = "/home/stock/users";
+            String filepath = Paths.get(directory, imagename).toString();
+
+            BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
+            stream.write(picture.getBytes());
+            stream.close();
+
+            File file = new File("/home/stock/users/"+user.getPicture());
+            if (file.exists()){
+                file.delete();
+            }
+
+            if (userTemplate.updatePicture(id, imagename) >= 1) {
+                return "redirect:/user/list";
+            } else {
+                return "redirect:/user/list";
+            }
+
+        } catch (Exception e){
+            return "redirect:/user/list";
+        }
+    }
 
     //The method below is used for deleting a user from the database
     //we pass the id of the user to delete using {} and @PathVariable

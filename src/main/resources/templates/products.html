@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Products</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/fresh-bootstrap-table.css}" rel="stylesheet"/>
+</head>
+<body>
+<header th:replace="links :: links"></header>
+
+<div class="container">
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Add Product</button>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Product Form</h4>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/product/add}" th:object="${addproduct}" method="post">
+                        <div class="form-group">
+                            <label>Product Code</label>
+                            <input type="text" class="form-control" th:required="true" th:field="*{code_product}"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input type="text" class="form-control" th:required="true" th:field="*{name}"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" class="form-control" th:required="true" th:field="*{quantity}"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Unit Price</label>
+                            <input type="number" class="form-control" th:required="true" th:field="*{unit_price}"/>
+                        </div>
+                        <div class="text-center">
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <br/><br/>
+    <h2>All Products</h2>
+    <div class="row">
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th>No:</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product, i : ${products}">
+                <td th:text="${i.index+1}"></td>
+                <td th:text="${product.code_product}"></td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.quantity}"></td>
+                <td th:text="${product.unit_price}"></td>
+                <td th:text="${product.quantity * product.unit_price}"></td>
+                <td>
+                    <button type="button" class="btn btn-xs btn-warning" data-toggle="modal" th:attr="data-target='#editModal'+${product.id}">Edit</button>
+                    <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" th:attr="data-target='#deleteModal'+${product.id}">Delete</button>
+                </td>
+
+                <!--Editing Product-->
+                <div th:id="'editModal'+${product.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title text-center">Edit Product</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/product/edit}" method="post">
+                                    <input type="hidden" name="id" th:value="${product.id}"/>
+                                    <div class="form-group">
+                                        <label>Product Code</label>
+                                        <input type="text" class="form-control" th:required="true" name="code_product" th:value="${product.code_product}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Product Name</label>
+                                        <input type="text" class="form-control" th:required="true" name="name" th:value="${product.name}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="number" class="form-control" th:required="true" name="quantity" th:value="${product.quantity}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="number" class="form-control" th:required="true" name="unit_price" th:value="${product.unit_price}"/>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Delete Product-->
+                <div th:id="'deleteModal'+${product.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title text-center">Delete Product</h4>
+                            </div>
+                            <div class="modal-body text-center">
+                                <h3 class="text-danger">Are you sure you want to Delete<br/> <span style="font-weight: bold" th:text="${product.name}"></span></h3>
+                                <a th:href="@{delete/{id}(id=${product.id})}" class="btn btn-danger">YES</a>
+                                <a href="#" class="btn btn-success" data-dismiss="modal">NO</a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </tr>
+            </tbody>
+        </table>
+
+</div>
+</div>
+<script th:src="@{/js/jquery-3.1.0.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/bootstrap-table.js}" type="text/javascript"></script>
+</body>
+</html>
